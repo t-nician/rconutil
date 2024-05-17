@@ -29,23 +29,29 @@ class Packet:
     def __post_init__(self):
         if type(self.type) is SendPacketType:
             self.data = self.__raw_data_to_packet_format(self.data)
+        elif type(self.type) is ReceivePacketType:
+            pass
     
 
     def set_data(self, data: bytes):
         self.data = self.__raw_data_to_packet_format(data)
 
 
-    def __raw_data_to_packet_format(self, data: bytes):
+    def __raw_data_to_packet_format(self, data: bytes | str):
         """
         Glad I found this!
         
         https://github.com/Ch4r0ne/python-rcon-client/blob/main/python-rcon-client.py#L31
         """
+        __data = data
+        if type(__data) is str:
+            __data = __data.encode()
+
         return struct.pack(
             "<3i",
-            10 + len(data),
+            10 + len(__data),
             self.id,
             self.type.value,
-        ) + data + b"\x00\x00"
+        ) + __data + b"\x00\x00"
 
     
