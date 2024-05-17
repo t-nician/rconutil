@@ -28,8 +28,10 @@ class Packet:
 
     def __post_init__(self):
         if type(self.type) is SendPacketType:
-            self.data = self.__raw_data_to_packet_format(self.data)
+            self.set_data(self.data)
         elif type(self.type) is ReceivePacketType:
+            # TODO remove type & id from self.data, move to self.id & self.type
+            # TODO trim self.data
             pass
     
 
@@ -37,7 +39,7 @@ class Packet:
         self.data = self.__raw_data_to_packet_format(data)
 
 
-    def __raw_data_to_packet_format(self, data: bytes | str):
+    def __raw_data_to_packet_format(self, data: bytes | str) -> bytes:
         """
         Glad I found this!
         
