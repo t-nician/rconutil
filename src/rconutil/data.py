@@ -1,7 +1,7 @@
 import enum
 import struct
 
-from dataclasses import dataclass, field, asdict
+from dataclasses import dataclass, field
 
 
 class SendPacketType(enum.IntEnum):
@@ -16,15 +16,15 @@ class ReceivePacketType(enum.IntEnum):
     SERVERDATA_RESPONSE_VALUE = 0
 
 
-
 @dataclass
 class Packet:
     type: SendPacketType | ReceivePacketType = field(
-        default=SendPacketType.NONE
+        default=ReceivePacketType.NONE
     )
 
     data: bytes = field(default=b"")
     id: int = field(default=0)
+
 
     def __post_init__(self):
         if type(self.type) is SendPacketType:
@@ -36,6 +36,11 @@ class Packet:
 
 
     def __raw_data_to_packet_format(self, data: bytes):
+        """
+        Glad I found this!
+        
+        https://github.com/Ch4r0ne/python-rcon-client/blob/main/python-rcon-client.py#L31
+        """
         return struct.pack(
             "<3i",
             10 + len(data),
