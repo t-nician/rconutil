@@ -3,6 +3,11 @@ import enum
 from dataclasses import dataclass, field
 
 
+class LoginMessage(enum.Enum):
+    SUCCESS = b"\x00\x00\x00"
+    FAILURE = b"\xff\xff\xff\xff"
+
+
 class SendPacketType(enum.IntEnum):
     SERVERDATA_AUTH = 3
     SERVERDATA_EXECCOMMAND = 2
@@ -28,10 +33,15 @@ class RconPacket:
             
         if self.type is ReceivePacketType.UNKNOWN_RESPONSE:
             self.id = int.from_bytes(self.data[1:5], "big")
-            self.type = ReceivePacketType(
-                int.from_bytes(self.data[5:9], "big")
-            )
-            self.data = self.data[11::]
+
+            if self.data[4:8] == LoginMessage.FAILURE.value:
+                self.data = LoginMessage.FAILURE.value
+                self.type = ReceivePacketType.SERVERDATA_AUTH_RESPONSE
+            else:
+                self.type = ReceivePacketType(
+                    int.from_bytes(self.data[5:9], "big")
+                )
+                self.data = self.data[11::]
 
 
     def to_bytes(self) -> bytes:

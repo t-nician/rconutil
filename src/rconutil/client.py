@@ -42,7 +42,7 @@ class RconClient:
                 received_packet = data.RconPacket(
                     data=self._socket.recv(4096)
                 )
-
+                
                 if received_packet.id == command_packet.id:
                     match command_packet.type:
                         case data.SendPacketType.SERVERDATA_AUTH:
@@ -73,13 +73,13 @@ class RconClient:
             command_packet=data.RconPacket(
                 type=data.SendPacketType.SERVERDATA_AUTH,
                 data=password or self.password,
-                id=99
+                id=0
             )
         )
 
         login_response = rcon_response.response_packets[0]
 
-        print(login_response)
+        return login_response.data == data.LoginMessage.SUCCESS.value
 
 
 

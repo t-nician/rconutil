@@ -18,7 +18,8 @@ client = rconutil.client.RconClient(
     password=password
 )
 
-client.login()
+success = client.login()
+print("login success!?", success)
 
 print(
     client.send(
