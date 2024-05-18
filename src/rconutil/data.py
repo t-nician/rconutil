@@ -70,3 +70,4 @@ class RconCommand:
     command_packet: RconPacket = field(default_factory=RconPacket)
     response_packets: list[RconPacket] = field(default_factory=list)
 
+    

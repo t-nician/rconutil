@@ -17,4 +17,4 @@ response = client.send(
 
 print(response.response_packets[0])
 
-client.keep_alive()
+#client.keep_alive()

@@ -78,19 +78,21 @@ class RconClient:
         )
 
         return rcon_command
-        
-
-
-        
-
-
+    
 
     def keep_alive(self):
         next_beat = time.time() + KEEP_ALIVE_TIMEOUT_SECONDS
+        keep_alive_packet = data.RconPacket(
+            type=data.SendPacketType.SERVERDATA_EXECCOMMAND,
+            data=b"stats"
+        )
+
 
         while True:
             if time.time() < next_beat:
                 continue
             
+            print(self.send(keep_alive_packet).response_packets[0].data)
             next_beat = time.time() + KEEP_ALIVE_TIMEOUT_SECONDS
+
             
