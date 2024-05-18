@@ -44,8 +44,7 @@ class RconPacket:
 
 
     def to_bytes(self) -> bytes:
-        return str(
-            10 + len(self.data)
-        ).encode() + (
+        print(self.id)
+        return str(10 + len(self.data)).encode() + (
             self.id + self.type.value + b"\x00" + self.data + b"\x00\x00"
         )
