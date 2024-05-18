@@ -1,5 +1,6 @@
 import enum
 import struct
+import random
 
 from dataclasses import dataclass, field
 
@@ -18,7 +19,7 @@ class ReceivePacketType(enum.IntEnum):
 
 @dataclass
 class RconPacket:
-    id: int = field(default=-1)
+    id: int = field(default_factory=lambda: random.randint(0, 9))
     data: bytes | str = field(default=b"")
     type: SendPacketType | ReceivePacketType = field(
         default=ReceivePacketType.NONE
@@ -28,9 +29,13 @@ class RconPacket:
         if type(self.type) is SendPacketType and self.data != b"":
             self.data = self.__generate_bytes_packet(self.data)
         elif type(self.type) is ReceivePacketType and self.data != b"":
-            self.id, self.type, self.data = self.__derive_bytes_packet_to_tuple(
+            __id, __type, __data  = self.__derive_bytes_packet_to_tuple(
                 self.data
             )
+
+            self.id = __id
+            self.type = ReceivePacketType(__type)
+            self.data = __data
 
 
     def to_bytes(self) -> bytes:
@@ -60,3 +65,10 @@ class RconPacket:
             self.id,
             self.type.value,
         ) + __data + b"\x00\x00"
+
+
+@dataclass
+class RconCommand:
+    command_packet: RconPacket = field(default_factory=RconPacket)
+    response_packets: list[RconPacket] = field(default_factory=list)
+
