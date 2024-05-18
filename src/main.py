@@ -19,3 +19,12 @@ client = rconutil.client.RconClient(
 )
 
 client.login()
+
+print(
+    client.send(
+        rconutil.data.RconPacket(
+            type=rconutil.data.SendPacketType.SERVERDATA_EXECCOMMAND,
+            data=b"stats"
+        )
+    ).response_packets[0]
+)
