@@ -60,19 +60,18 @@ class RconClient:
             )
         )
         
-        print(rcon_command.response_packets[0])
+        #print(rcon_command.response_packets[0])
         
         return True
     
 
     def send(self, packet: data.RconPacket) -> data.RconCommand:
         rcon_command = data.RconCommand(command_packet=packet)
-        
+   
         self._socket.send(packet.to_bytes())
 
         rcon_command.response_packets.append(
             data.RconPacket(
-                type=data.ReceivePacketType.SERVERDATA_RESPONSE_VALUE,
                 data=self._socket.recv(4096)
             )
         )

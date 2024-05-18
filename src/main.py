@@ -10,10 +10,10 @@ print(
     client.send(
         packet=rconutil.data.RconPacket(
             type=rconutil.data.SendPacketType.SERVERDATA_EXECCOMMAND,
-            data=b"stats",
-            id=3
+            data=b"banlist",
+            id=4
         )
-    ).response_packets[0].data
+    ).response_packets[0].to_bytes()
 )
 
-client.keep_alive()
+#client.keep_alive()
