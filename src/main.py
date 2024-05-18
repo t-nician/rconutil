@@ -12,8 +12,10 @@ with open("./creds.json", "r") as file:
     password = json_data["password"]
 
 
-login_packet = rconutil.data.RconPacket(
-    type=rconutil.data.SendPacketType.SERVERDATA_AUTH,
-    data=password,
-    id=5
+client = rconutil.client.RconClient(
+    host=host,
+    port=port,
+    password=password
 )
+
+client.login()

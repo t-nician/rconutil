@@ -20,7 +20,6 @@ class RconPacket:
     type: SendPacketType | ReceivePacketType = field(
         default=ReceivePacketType.UNKNOWN_RESPONSE
     )
-
     id: int = field(default=0)
 
     def __post_init__(self):
@@ -43,3 +42,11 @@ class RconPacket:
                 + self.data 
                 + b"\x00\x00"
         )
+
+
+@dataclass
+class RconCommand:
+    command_packet: RconPacket
+    response_packets: list[RconPacket] = field(
+        default_factory=list
+    )
