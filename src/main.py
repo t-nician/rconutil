@@ -19,14 +19,16 @@ login_packet = rconutil.data.RconPacket(
     data=password.encode(),
 )
 
-
 sesh = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
 sesh.connect((host, port))
 sesh.send(
-    struct.pack("<3i", 10 + len(login_packet.data), 0, 3) + login_packet.data + b"\x00\x00"
-)#login_packet.to_bytes())
+    login_packet.to_bytes()
+)
 
-print("a", sesh.recv(4096))
+response_packet = rconutil.data.RconPacket(
+    type=rconutil.data.ReceivePacketType.SERVERDATA_AUTH_RESPONSE,
+    data=sesh.recv(4096)
+)
 
-
+print(response_packet.to_bytes())
