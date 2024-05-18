@@ -1,4 +1,5 @@
 import rconutil
+import pprint
 import json
 
 host, port, password = "", -1, ""
@@ -19,13 +20,12 @@ client = rconutil.client.RconClient(
 )
 
 success = client.login()
-print("login success!?", success)
 
-print(
-    client.send(
-        rconutil.data.RconPacket(
-            type=rconutil.data.SendPacketType.SERVERDATA_EXECCOMMAND,
-            data=b"stats"
-        )
-    ).response_packets[0]
+empty_packet = rconutil.data.RconPacket(
+    type=rconutil.data.SendPacketType.SERVERDATA_EXECCOMMAND,
+    data=b"chatlog 7B24F811488928B4 10",
+    id=2
 )
+
+while True:
+    pprint.pprint(client.send(empty_packet).response_packets)

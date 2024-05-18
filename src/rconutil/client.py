@@ -42,7 +42,7 @@ class RconClient:
                 received_packet = data.RconPacket(
                     data=self._socket.recv(4096)
                 )
-                
+                #print(received_packet)
                 if received_packet.id == command_packet.id:
                     match command_packet.type:
                         case data.SendPacketType.SERVERDATA_AUTH:
@@ -54,6 +54,7 @@ class RconClient:
                                 rcon_command.response_packets.append(received_packet)
 
             except socket.error as _:
+                #print(_, command_packet)
                 break
 
         return rcon_command

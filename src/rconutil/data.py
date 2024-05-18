@@ -39,9 +39,9 @@ class RconPacket:
                 self.type = ReceivePacketType.SERVERDATA_AUTH_RESPONSE
             else:
                 self.type = ReceivePacketType(
-                    int.from_bytes(self.data[5:9], "big")
+                    int.from_bytes(self.data[6:9], "big")
                 )
-                self.data = self.data[11::]
+                self.data = self.data[12:len(self.data) - 3]
 
 
     def to_bytes(self) -> bytes:
