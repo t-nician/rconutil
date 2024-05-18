@@ -19,16 +19,14 @@ class ReceivePacketType(enum.IntEnum):
 
 @dataclass
 class RconPacket:
-    id: int = field(default_factory=lambda: random.randint(0, 9))
+    id: int = field(default=0)
     data: bytes | str = field(default=b"")
     type: SendPacketType | ReceivePacketType = field(
         default=ReceivePacketType.NONE
     )
 
     def __post_init__(self):
-        if type(self.type) is SendPacketType and self.data != b"":
-            self.data = self.__generate_bytes_packet(self.data)
-        elif type(self.type) is ReceivePacketType and self.data != b"":
+        if type(self.type) is ReceivePacketType and self.data != b"":
             __id, __type, __data  = self.__derive_bytes_packet_to_tuple(
                 self.data
             )
@@ -46,7 +44,7 @@ class RconPacket:
             self, data: bytes
     ) -> tuple[int, int, bytes]:
         print("HEY YOU GOTTA MAKE ME WORK. PROB DIDNT MEAN TO RUN ME!")
-        return 0, 0, b""
+        return 0, 0, data
 
 
     def __generate_bytes_packet(self, data: bytes | str) -> bytes:
