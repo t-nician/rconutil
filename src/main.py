@@ -1,7 +1,5 @@
 import rconutil
-import socket
 import json
-import struct
 
 host, port, password = "", -1, ""
 
@@ -16,19 +14,6 @@ with open("./creds.json", "r") as file:
 
 login_packet = rconutil.data.RconPacket(
     type=rconutil.data.SendPacketType.SERVERDATA_AUTH,
-    data=password.encode(),
+    data=password,
+    id=5
 )
-
-sesh = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-
-sesh.connect((host, port))
-sesh.send(
-    login_packet.to_bytes()
-)
-
-response_packet = rconutil.data.RconPacket(
-    type=rconutil.data.ReceivePacketType.SERVERDATA_AUTH_RESPONSE,
-    data=sesh.recv(4096)
-)
-
-print(response_packet.to_bytes())

@@ -1,7 +1,6 @@
 import enum
-import random
 
-from dataclasses import dataclass, fields, field
+from dataclasses import dataclass, field
 
 
 class SendPacketType(enum.IntEnum):
@@ -25,7 +24,10 @@ class RconPacket:
     id: int = field(default=0)
 
     def __post_init__(self):
-        if type(self.type) is ReceivePacketType:
+        if type(self.data) is str:
+            self.data = self.data.encode()
+            
+        if self.type is ReceivePacketType.UNKNOWN_RESPONSE:
             self.id = int.from_bytes(self.data[1:5], "big")
             self.type = ReceivePacketType(
                 int.from_bytes(self.data[5:9], "big")
