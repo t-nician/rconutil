@@ -1,6 +1,7 @@
 import rconutil
 import socket
 import json
+import struct
 
 host, port, password = "", -1, ""
 
@@ -22,7 +23,9 @@ login_packet = rconutil.data.RconPacket(
 sesh = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
 sesh.connect((host, port))
-sesh.send(login_packet.to_bytes())
+sesh.send(
+    struct.pack("<3i", 10 + len(login_packet.data), 0, 3) + login_packet.data + b"\x00\x00"
+)#login_packet.to_bytes())
 
 print("a", sesh.recv(4096))
 
