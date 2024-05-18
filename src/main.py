@@ -1,19 +1,28 @@
 import rconutil
-import pprint
+import socket
+import json
 
-client = rconutil.client.RconClient()
+host, port, password = "", -1, ""
 
-client.load_creds_from_json_file("./creds.json")
-client.connect()
+with open("./creds.json", "r") as file:
+    content = file.read()
+    json_data = json.loads(content)
+    
+    host = json_data["host"]
+    port = json_data["port"]
+    password = json_data["password"]
 
-print(
-    client.send(
-        packet=rconutil.data.RconPacket(
-            type=rconutil.data.SendPacketType.SERVERDATA_EXECCOMMAND,
-            data=b"banlist",
-            id=4
-        )
-    ).response_packets[0].to_bytes()
+
+login_packet = rconutil.data.RconPacket(
+    type=rconutil.data.SendPacketType.SERVERDATA_AUTH,
+    data=password.encode(),
 )
 
-#client.keep_alive()
+
+sesh = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
+sesh.connect((host, port))
+print(login_packet.to_bytes())
+sesh.send(login_packet.to_bytes())
+
+print("a", sesh.recv(4096))
