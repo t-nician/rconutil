@@ -53,14 +53,14 @@ class RconClient:
 
         self._socket.connect((__host, __port))
 
-        response_data = self.send(
+        rcon_command = self.send(
             data.RconPacket(
                 type=data.SendPacketType.SERVERDATA_AUTH,
                 data=__password
             )
         )
         
-        print(response_data.response_packets[0])
+        print(rcon_command.response_packets[0])
         
         return True
     
@@ -84,7 +84,7 @@ class RconClient:
         next_beat = time.time() + KEEP_ALIVE_TIMEOUT_SECONDS
         keep_alive_packet = data.RconPacket(
             type=data.SendPacketType.SERVERDATA_EXECCOMMAND,
-            data=b"stats"
+            data=b"chatlog 50"
         )
 
 
@@ -92,7 +92,7 @@ class RconClient:
             if time.time() < next_beat:
                 continue
             
-            print(self.send(keep_alive_packet).response_packets[0].data)
+            self.send(keep_alive_packet)
             next_beat = time.time() + KEEP_ALIVE_TIMEOUT_SECONDS
 
             

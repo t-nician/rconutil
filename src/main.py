@@ -1,20 +1,19 @@
 import rconutil
+import pprint
 
 client = rconutil.client.RconClient()
 
-
-
 client.load_creds_from_json_file("./creds.json")
-
 client.connect()
 
-response = client.send(
-    rconutil.data.RconPacket(
-        type=rconutil.data.SendPacketType.SERVERDATA_EXECCOMMAND,
-        data=b"stats"
-    )
+print(
+    client.send(
+        packet=rconutil.data.RconPacket(
+            type=rconutil.data.SendPacketType.SERVERDATA_EXECCOMMAND,
+            data=b"stats",
+            id=3
+        )
+    ).response_packets[0].data
 )
 
-print(response.response_packets[0])
-
-#client.keep_alive()
+client.keep_alive()
