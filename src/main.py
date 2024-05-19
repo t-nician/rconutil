@@ -21,9 +21,11 @@ async def main():
         password=password
     )
 
-    await rcon_client.login()
-    
-    response = await rcon_client.send(
+    login_resopnse = await rcon_client.login()
+
+    print("login", login_resopnse)
+
+    command_response = await rcon_client.send(
         command_packet=rconutil.data.RconPacket(
             type=rconutil.data.SendPacketType.SERVERDATA_EXECCOMMAND,
             data=b"stats",
@@ -31,7 +33,7 @@ async def main():
         )
     )
 
-    print(response)
+    print("stats", command_response)
 
 
 

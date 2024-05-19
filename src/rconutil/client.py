@@ -45,13 +45,15 @@ class RconClient:
                 received_packet = data.RconPacket(
                     data=self._socket.recv(4096)
                 )
-
+                
                 if received_packet.id == command_packet.id:
                     rcon_command.response_packets.append(received_packet)
                 elif receive_packet_id_timeout.get(received_packet.id):
                     receive_packet_id_timeout[received_packet.id].response_packets.append(
                         received_packet
                     )
+                elif received_packet.id == 255:
+                    rcon_command.response_packets.append(received_packet)
 
             except socket.error as _:
                 break
@@ -63,9 +65,9 @@ class RconClient:
         self._socket.connect((self.host, self.port))
 
 
-    async def login(self, password: str | None = None):
+    async def login(self, password: str | None = None) -> data.RconCommand:
         await self.connect()
-        await self.send(
+        return await self.send(
             command_packet=data.RconPacket(
                 type=data.SendPacketType.SERVERDATA_AUTH,
                 data=password or self.password
