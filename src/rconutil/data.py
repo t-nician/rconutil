@@ -44,7 +44,7 @@ class RconPacket:
                 self.data = self.data[12:len(self.data) - 3]
 
 
-    def to_bytes(self) -> bytes:
+    async def to_bytes(self) -> bytes:
         return (10 + len(self.data)).to_bytes(1, "big") + (
             self.id.to_bytes(4, "big") 
                 + self.type.value.to_bytes(4, "big")
@@ -60,3 +60,4 @@ class RconCommand:
     response_packets: list[RconPacket] = field(
         default_factory=list
     )
+    response_timeout_threshold: float = field(default=0.0)

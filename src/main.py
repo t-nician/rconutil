@@ -1,5 +1,5 @@
 import rconutil
-import pprint
+import asyncio
 import json
 
 host, port, password = "", -1, ""
@@ -13,19 +13,26 @@ with open("./creds.json", "r") as file:
     password = json_data["password"]
 
 
-client = rconutil.client.RconClient(
-    host=host,
-    port=port,
-    password=password
-)
 
-success = client.login()
+async def main():
+    rcon_client = rconutil.client.RconClient(
+        host=host,
+        port=port,
+        password=password
+    )
 
-empty_packet = rconutil.data.RconPacket(
-    type=rconutil.data.SendPacketType.SERVERDATA_EXECCOMMAND,
-    data=b"chatlog 7B24F811488928B4 10",
-    id=2
-)
+    await rcon_client.login()
+    
+    response = await rcon_client.send(
+        command_packet=rconutil.data.RconPacket(
+            type=rconutil.data.SendPacketType.SERVERDATA_EXECCOMMAND,
+            data=b"stats",
+            id=99
+        )
+    )
 
-while True:
-    pprint.pprint(client.send(empty_packet).response_packets)
+    print(response)
+
+
+
+asyncio.run(main())
