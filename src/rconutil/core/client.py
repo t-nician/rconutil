@@ -30,6 +30,9 @@ class RconClient:
         
         self._socket.send(packet.to_bytes())
 
+        if not ignore_multipacket:
+            self._socket.send(stream_packet.to_bytes())
+
         while True:
             if not ignore_multipacket:
                 self._socket.send(stream_packet.to_bytes())
@@ -37,8 +40,6 @@ class RconClient:
             response_packet = data.RconPacket(
                 data=self._socket.recv(4096)
             )
-
-            print(response_packet)
 
             match response_packet.type:
                 case data.ReceivePacketType.SERVERDATA_AUTH_FAILURE:
