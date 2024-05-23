@@ -33,7 +33,7 @@ class RconPacket:
             if self.data != b"":
                 self.id = int.from_bytes(self.data[1:5], "big")
                 self.type = ReceivePacketType(self.data[5:9])
-                self.data = self.data[10::]
+                self.data = self.data[12:len(self.data) - 3]
     
 
     def to_bytes(self) -> bytes:

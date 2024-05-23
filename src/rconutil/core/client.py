@@ -17,22 +17,28 @@ class RconClient:
     )
 
     def send(
-        self, packet: data.RconPacket
+        self, packet: data.RconPacket,
+        ignore_multipacket: bool | None = False
     ) -> data.RconPacket | list[data.RconPacket]:
         stream_packet = data.RconPacket(
             type=data.ReceivePacketType.SERVERDATA_RESPONSE_VALUE,
-            data=b"\x00\x00\x00\x01"
+            data=b"",
+            id=1,
         )
+
         return_packets = []
         
         self._socket.send(packet.to_bytes())
-        
+
         while True:
+            if not ignore_multipacket:
+                self._socket.send(stream_packet.to_bytes())
+
             response_packet = data.RconPacket(
                 data=self._socket.recv(4096)
             )
 
-            print("response", response_packet)
+            print(response_packet)
 
             match response_packet.type:
                 case data.ReceivePacketType.SERVERDATA_AUTH_FAILURE:
@@ -45,7 +51,12 @@ class RconClient:
                 case data.ReceivePacketType.SERVERDATA_RESPONSE_VALUE:
                     if response_packet.id == packet.id:
                         return_packets.append(response_packet)
-                        self._socket.send(stream_packet.to_bytes())
+                        if ignore_multipacket:
+                            break
+                        if response_packet.data == b"":
+                            break
+                case data.ReceivePacketType.UNKNOWN_RESPONSE:
+                    break
 
 
         return len(return_packets) == 1 and return_packets[0] or return_packets
@@ -60,7 +71,8 @@ class RconClient:
         self.send(
             data.RconPacket(
                 type=data.SendPacketType.SERVERDATA_AUTH,
-                data=password_override or self.password
-            )
+                data=password_override or self.password,
+            ),
+            ignore_multipacket=True
         )
         
