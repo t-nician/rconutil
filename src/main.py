@@ -21,7 +21,11 @@ client = rconutil.core.client.RconClient(
 
 client.login()
 
-print(client.send(rconutil.core.data.RconPacket(
-    type=rconutil.core.data.SendPacketType.SERVERDATA_EXECCOMMAND,
-    data=b"stats"
-)))
+print(
+    client.send(
+        rconutil.core.packet.RconPacket(
+            type=rconutil.core.packet.SendPacketType.SERVERDATA_EXECCOMMAND,
+            data=b"status"
+        )
+    )
+)

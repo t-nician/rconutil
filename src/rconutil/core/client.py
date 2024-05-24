@@ -1,4 +1,4 @@
-from rconutil.core import data
+from rconutil.core import packet
 
 from dataclasses import dataclass, field
 from socket import socket, AF_INET, SOCK_STREAM
@@ -17,11 +17,11 @@ class RconClient:
     )
 
     def send(
-        self, packet: data.RconPacket,
+        self, packet: packet.RconPacket,
         ignore_multipacket: bool | None = False
-    ) -> data.RconPacket | list[data.RconPacket]:
-        stream_packet = data.RconPacket(
-            type=data.ReceivePacketType.SERVERDATA_RESPONSE_VALUE,
+    ) -> packet.RconPacket | list[packet.RconPacket]:
+        stream_packet = packet.RconPacket(
+            type=packet.ReceivePacketType.SERVERDATA_RESPONSE_VALUE,
             data=b"",
             id=1,
         )
@@ -37,26 +37,26 @@ class RconClient:
             if not ignore_multipacket:
                 self._socket.send(stream_packet.to_bytes())
 
-            response_packet = data.RconPacket(
+            response_packet = packet.RconPacket(
                 data=self._socket.recv(4096)
             )
 
             match response_packet.type:
-                case data.ReceivePacketType.SERVERDATA_AUTH_FAILURE:
+                case packet.ReceivePacketType.SERVERDATA_AUTH_FAILURE:
                     return_packets.append(response_packet)
                     break
-                case data.ReceivePacketType.SERVERDATA_AUTH_SUCCESS:
+                case packet.ReceivePacketType.SERVERDATA_AUTH_SUCCESS:
                     if response_packet.id == packet.id:
                         return_packets.append(response_packet)
                         break
-                case data.ReceivePacketType.SERVERDATA_RESPONSE_VALUE:
+                case packet.ReceivePacketType.SERVERDATA_RESPONSE_VALUE:
                     if response_packet.id == packet.id:
                         return_packets.append(response_packet)
                         if ignore_multipacket:
                             break
                         if response_packet.data == b"":
                             break
-                case data.ReceivePacketType.UNKNOWN_RESPONSE:
+                case packet.ReceivePacketType.UNKNOWN_RESPONSE:
                     break
 
 
@@ -70,8 +70,8 @@ class RconClient:
     def login(self, password_override: str | None = None):
         self.connect()
         self.send(
-            data.RconPacket(
-                type=data.SendPacketType.SERVERDATA_AUTH,
+            packet.RconPacket(
+                type=packet.SendPacketType.SERVERDATA_AUTH,
                 data=password_override or self.password,
             ),
             ignore_multipacket=True

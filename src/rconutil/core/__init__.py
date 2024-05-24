@@ -1,1 +1,1 @@
-from rconutil.core import client, data
+from rconutil.core import client, packet
