@@ -5,8 +5,9 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Python Debugger: Launch",
+            "name": "Python Debugger: Launch Server",
             "type": "debugpy",
+            "args": ["server"],
             "request": "launch",
             "program": "./src/main.py",
             "console": "integratedTerminal"

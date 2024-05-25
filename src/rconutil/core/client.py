@@ -1,4 +1,5 @@
 from rconutil.core import packet
+from rconutil.core.packet import RconPacket, SendPacketType, ReceivePacketType
 
 from dataclasses import dataclass, field
 from socket import socket, AF_INET, SOCK_STREAM
@@ -17,13 +18,13 @@ class RconClient:
     )
 
     def send(
-        self, packet: packet.RconPacket,
+        self, packet: RconPacket,
         ignore_multipacket: bool | None = False
-    ) -> packet.RconPacket | list[packet.RconPacket]:
-        stream_packet = packet.RconPacket(
-            type=packet.ReceivePacketType.SERVERDATA_RESPONSE_VALUE,
+    ) -> RconPacket | list[RconPacket]:
+        stream_packet = RconPacket(
+            type=ReceivePacketType.SERVERDATA_RESPONSE_VALUE,
             data=b"",
-            id=1,
+            id=1
         )
 
         return_packets = []
@@ -37,26 +38,28 @@ class RconClient:
             if not ignore_multipacket:
                 self._socket.send(stream_packet.to_bytes())
 
-            response_packet = packet.RconPacket(
+            response_packet = RconPacket(
                 data=self._socket.recv(4096)
             )
 
+            print(response_packet)
+
             match response_packet.type:
-                case packet.ReceivePacketType.SERVERDATA_AUTH_FAILURE:
+                case ReceivePacketType.SERVERDATA_AUTH_FAILURE:
                     return_packets.append(response_packet)
                     break
-                case packet.ReceivePacketType.SERVERDATA_AUTH_SUCCESS:
+                case ReceivePacketType.SERVERDATA_AUTH_SUCCESS:
                     if response_packet.id == packet.id:
                         return_packets.append(response_packet)
                         break
-                case packet.ReceivePacketType.SERVERDATA_RESPONSE_VALUE:
+                case ReceivePacketType.SERVERDATA_RESPONSE_VALUE:
                     if response_packet.id == packet.id:
                         return_packets.append(response_packet)
                         if ignore_multipacket:
                             break
                         if response_packet.data == b"":
                             break
-                case packet.ReceivePacketType.UNKNOWN_RESPONSE:
+                case ReceivePacketType.UNKNOWN_RESPONSE:
                     break
 
 

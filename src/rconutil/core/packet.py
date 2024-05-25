@@ -1,9 +1,6 @@
 from enum import Enum
 from dataclasses import dataclass, field
 
-class ResponseValue(Enum):
-    SERVERDATA_EMPTY = b"\x00\x00\x00\x00"
-
 
 class SendPacketType(Enum):
     SERVERDATA_AUTH = b"\x00\x00\x00\x03"
@@ -29,10 +26,21 @@ class RconPacket:
         if type(self.data) is str:
             self.data = self.data.encode()
 
+        if len(self.data) < 10:
+            pass
+
         if self.type is ReceivePacketType.UNKNOWN_RESPONSE:
             if self.data != b"":
                 self.id = int.from_bytes(self.data[1:5], "big")
-                self.type = ReceivePacketType(self.data[5:9])
+
+                try:
+                    self.type = SendPacketType(self.data[5:9])
+                except:
+                    try:
+                        self.type = ReceivePacketType(self.data[5:9])
+                    except:
+                        pass
+
                 self.data = self.data[12:len(self.data) - 3]
     
 
@@ -42,6 +50,6 @@ class RconPacket:
                 + self.type.value
                 + b"\x00\x00\x00" 
                 + self.data 
-                + b"\x00\x00"
+                + b"\x00\x00\x00"
         )
         
